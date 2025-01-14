@@ -1,3 +1,9 @@
+import {TradesPage} from '@pages/trades';
+
 export const App = () => {
-  return <div>Hello</div>;
+  return (
+    <section>
+      <TradesPage />
+    </section>
+  );
 };
