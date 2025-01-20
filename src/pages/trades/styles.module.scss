@@ -6,6 +6,9 @@
 .chartHeader {
   width: 70%;
   background-color: $backgroundChart;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .chartContainer {
@@ -34,4 +37,34 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.hr {
+  background-color: $colorTextSecondary;
+  opacity: 0.3;
+  width: 1px;
+  height: 15px;
+}
+
+.menu {
+  padding: 4px;
+  background-color: $colorSecondary;
+  border-radius: 6px;
+  width: 100px;
+  height: auto;
+}
+
+.menu.open {
+  display: block;
+}
+
+.menuItem {
+  cursor: pointer;
+  &:hover {
+    color: $colorTextOrange;
+  }
+}
+
+.menuItem.selected {
+  color: $colorTextOrange;
 }

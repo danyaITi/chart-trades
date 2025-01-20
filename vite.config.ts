@@ -3,6 +3,7 @@
 import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
   resolve: {
@@ -13,7 +14,7 @@ export default defineConfig({
       '@pages': path.resolve(__dirname, './src/pages'),
     },
   },
-  plugins: [react()],
+  plugins: [react(), svgr({include: '**/*.svg?react'})],
   css: {
     preprocessorOptions: {
       scss: {

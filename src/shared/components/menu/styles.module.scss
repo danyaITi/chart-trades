@@ -1,0 +1,19 @@
+.menuContainer {
+  position: relative;
+  display: inline-flex;
+}
+
+.button {
+  cursor: default;
+  color: $colorTextSecondary;
+  display: inline-flex;
+}
+
+.menu {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: translate(0%, 100%);
+  z-index: 99;
+}

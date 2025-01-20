@@ -8,12 +8,20 @@ import {
   ChartTextColor,
   TimeFrame,
 } from '@shared/types/enums';
-import {useEffect, useState} from 'react';
+import {ReactElement, useCallback, useEffect, useState} from 'react';
 import {CandlestickData, UTCTimestamp} from 'lightweight-charts';
-import {Button, Loader} from '@shared/components';
-import {classNames} from '@shared/utils';
+import {Button, Loader, Menu, MenuItem} from '@shared/components';
+import {classNames, detectMob} from '@shared/utils';
+import CandlestickChartIcon from '@assets/images/candlestick-chart.svg?react';
+import BarChartIcon from '@assets/images/bar-chart.svg?react';
 
 const url = 'wss://api-pub.bitfinex.com/ws/2';
+
+type ChartType = {
+  icon: ReactElement<SVGElement>;
+  label: string;
+  type: ChartAvailableTypes;
+};
 
 const TIME_FRAMES: TimeFrame[] = [
   TimeFrame['1MINUTE'],
@@ -26,12 +34,27 @@ const TIME_FRAMES: TimeFrame[] = [
   TimeFrame['1MONTH'],
 ];
 
+const CHART_TYPES: ChartType[] = [
+  {
+    icon: <CandlestickChartIcon width={24} height={24} />,
+    label: 'Свечи',
+    type: 'Candlestick',
+  },
+  {
+    icon: <BarChartIcon width={24} height={24} />,
+    label: 'Бары',
+    type: 'Bar',
+  },
+];
+
 /**
  * Страница мониторинга крипто-валют
  */
 export const TradesPage = () => {
   const [selectedFrame, setSelectedFrame] = useState<TimeFrame>(TimeFrame['1MINUTE']);
+  const [selectedTypeChart, setSelectedTypeChart] = useState<ChartAvailableTypes>('Candlestick');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
 
   const {ref, mainSeries} = useChart({
     backgroundColor: ChartBackgroundColor.DARK,
@@ -41,6 +64,7 @@ export const TradesPage = () => {
     borderColor: ChartBorderColor.SECONDARY,
     upColor: ChartSeriesColor.UP,
     downColor: ChartSeriesColor.DOWN,
+    typeChart: selectedTypeChart,
   });
 
   useEffect(() => {
@@ -144,11 +168,39 @@ export const TradesPage = () => {
       clearInterval(heartbeatInterval);
       clearTimeout(heartbeatTimeout);
     };
-  }, [selectedFrame]);
+  }, [selectedFrame, selectedTypeChart]);
 
   // Выбирает временные рамки для показа на графике
   const selectTimeHandler = (time: TimeFrame) => () => {
     setSelectedFrame(time);
+  };
+
+  // Выбирает тип показываемого графика
+  const selectTypeChartHandler = (value: ChartAvailableTypes) => () => {
+    setSelectedTypeChart(value);
+    setIsOpenMenu(false);
+  };
+
+  const getSelectedTypeChartIcon = useCallback(() => {
+    return CHART_TYPES.find((chart) => chart.type === selectedTypeChart)?.icon;
+  }, [selectedTypeChart]);
+
+  const handleMouseEnter = () => {
+    if (!detectMob()) {
+      setIsOpenMenu(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!detectMob()) {
+      setIsOpenMenu(false);
+    }
+  };
+
+  const toggleMenu = () => {
+    if (detectMob()) {
+      setIsOpenMenu((prev) => !prev);
+    }
   };
 
   return (
@@ -164,6 +216,24 @@ export const TradesPage = () => {
             </Button>
           ))}
         </ul>
+
+        <span className={styles.hr} />
+
+        <Menu
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onClickButton={toggleMenu}
+          activeValue={getSelectedTypeChartIcon()}
+          classNameMenu={classNames(styles.menu, {[styles.open]: isOpenMenu})}>
+          {CHART_TYPES.map((item) => (
+            <MenuItem
+              className={classNames(styles.menuItem, {[styles.selected]: selectedTypeChart === item.type})}
+              onClick={selectTypeChartHandler(item.type)}>
+              {item.icon}
+              {item.label}
+            </MenuItem>
+          ))}
+        </Menu>
       </div>
       <div className={styles.chartContainer} ref={ref}>
         {isLoading && (

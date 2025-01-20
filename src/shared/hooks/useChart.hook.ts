@@ -21,6 +21,7 @@ type Props = {
   borderColor: ChartBorderColor;
   upColor: ChartSeriesColor;
   downColor: ChartSeriesColor;
+  typeChart?: ChartAvailableTypes;
 };
 
 /**
@@ -33,14 +34,14 @@ type Props = {
  * @param borderColor {ChartBackgroundColor} - цвет границ графика
  * @param downColor {ChartBackgroundColor} - цвет снижения графика
  * @param upColor {ChartBackgroundColor} - цвет повышения графика
+ * @param [typeChart] {ChartAvailableTypes} - тип графика
  * @example {
-    backgroundColor: ChartBackgroundColor.DARK,
+    backgroundColor: #000,
     autoSize: true,
-    gridColor: ChartGridColor.SECONDARY,
-    textColor: ChartTextColor.LIGHT,
-    borderColor: ChartBorderColor.SECONDARY,
-    upColor: ChartSeriesColor.UP,
-    downColor: ChartSeriesColor.DOWN,
+    gridColor: #fef,
+    textColor: #fff,
+    typeChart: 'Candlestick'
+    ...,
   }
  */
 export const useChart = ({
@@ -51,9 +52,10 @@ export const useChart = ({
   borderColor,
   downColor,
   upColor,
+  typeChart = 'Candlestick',
 }: Props): State => {
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
-  const mainSeries = useRef<ISeriesApi<'Candlestick'> | null>(null);
+  const mainSeries = useRef<ISeriesApi<ChartAvailableTypes> | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -105,13 +107,22 @@ export const useChart = ({
       borderColor,
     });
 
-    const series = chart.addCandlestickSeries({
-      upColor: upColor,
-      downColor: downColor,
-      borderVisible: false,
-      wickUpColor: upColor,
-      wickDownColor: downColor,
-    });
+    let series: ISeriesApi<ChartAvailableTypes> | null = null;
+
+    if (typeChart === 'Candlestick') {
+      series = chart.addCandlestickSeries({
+        upColor: upColor,
+        downColor: downColor,
+        borderVisible: false,
+        wickUpColor: upColor,
+        wickDownColor: downColor,
+      });
+    } else if (typeChart === 'Bar') {
+      series = chart.addBarSeries({
+        upColor: upColor,
+        downColor: downColor,
+      });
+    }
 
     mainSeries.current = series;
 
@@ -122,7 +133,7 @@ export const useChart = ({
 
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [typeChart]);
 
   return {
     ref: chartContainerRef,
