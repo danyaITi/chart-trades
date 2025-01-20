@@ -7,7 +7,6 @@ import path from 'path';
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
       '@app': path.resolve(__dirname, './src/app'),
       '@assets': path.resolve(__dirname, './src/assets'),
       '@shared': path.resolve(__dirname, './src/shared'),
@@ -15,4 +14,11 @@ export default defineConfig({
     },
   },
   plugins: [react()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@app/styles/_variables.scss" as *;`,
+      },
+    },
+  },
 });

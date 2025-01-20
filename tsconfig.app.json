@@ -10,7 +10,6 @@
     /* Path alias */
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"],
       "@app/*": ["./src/app/*"],
       "@shared/*": ["./src/shared/*"],
       "@assets/*": ["./src/assets/*"],

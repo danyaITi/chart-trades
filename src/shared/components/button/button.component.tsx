@@ -1,8 +1,12 @@
-import {ButtonHTMLAttributes} from 'react';
+import {ButtonHTMLAttributes, ForwardedRef, forwardRef} from 'react';
 import styles from './styles.module.scss';
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement>;
 
-export const Button = ({children}: Props) => {
-  return <button className={styles.button}>{children}</button>;
-};
+export const Button = forwardRef(({children, ...props}: Props, ref: ForwardedRef<HTMLButtonElement>) => {
+  return (
+    <button className={styles.button} {...props} ref={ref}>
+      {children}
+    </button>
+  );
+});

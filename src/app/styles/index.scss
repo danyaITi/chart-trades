@@ -1,15 +1,16 @@
 @use 'reset.scss';
-@use 'variables' as *;
 
 :root {
   line-height: $lineHeightBase;
   font-family: $fontFamilyRoboto;
   font-optical-sizing: auto;
   font-weight: $fontWeightBase;
+  font-size: $fontSizeBase;
   font-style: normal;
   font-variation-settings: 'wdth' 100;
 }
 
 html {
   min-height: 100%;
+  background-color: $backgroundColorDark;
 }
