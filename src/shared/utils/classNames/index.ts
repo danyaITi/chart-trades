@@ -15,7 +15,7 @@ type Mod = Record<string, boolean> | undefined;
  * classNames('button', { 'button--active': true, 'button--disabled': false }, ['extra-class'])
  * // Результат: 'button button--active extra-class'
  */
-export const classNames = (cls: string, mod: Mod = {}, additional: string[] | undefined = []) => {
+export const classNames = (cls: string, mod: Mod = {}, additional: [string | undefined] = [undefined]) => {
   return [
     cls,
     ...Object.entries(mod)

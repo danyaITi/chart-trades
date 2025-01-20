@@ -1,13 +1,20 @@
 $lineHeightBase: 1;
-$fontWeightBase: 400;
-$fontFamilyRoboto: 'Roboto', serif;
-$fontSizeBase: 16px;
 
+$fontWeightBase: 400;
+
+$fontFamilyRoboto: 'Roboto', serif;
+
+$fontSizeBase: 16px;
+$fontSizeSm: 12px;
+
+// Color background
 $backgroundColorDark: #000;
 $backgroundChart: #101014;
 
+// Color text
 $colorTextWhite: #ffffff;
 $colorTextSecondary: #adb1b8;
 $colorTextOrange: #f7a600;
 
-$fontSizeSm: 12px;
+// Any color
+$colorSecondary: #333537;
