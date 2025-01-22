@@ -1,4 +1,4 @@
-import {createChart, ISeriesApi, UTCTimestamp} from 'lightweight-charts';
+import {createChart, ISeriesApi, SeriesDataItemTypeMap, UTCTimestamp} from 'lightweight-charts';
 import {MutableRefObject, useEffect, useRef} from 'react';
 import {
   ChartBackgroundColor,
@@ -7,10 +7,12 @@ import {
   ChartSeriesColor,
   ChartTextColor,
 } from '@shared/types/enums';
+import {isOhlcData} from '@shared/types/guards';
 
 type State = {
   ref: MutableRefObject<HTMLDivElement | null>;
-  mainSeries: MutableRefObject<ISeriesApi<ChartAvailableTypes> | null>;
+  mainSeries: MutableRefObject<ISeriesApi<keyof SeriesDataItemTypeMap> | null>;
+  legendRef: MutableRefObject<HTMLDivElement | null>;
 };
 
 type Props = {
@@ -21,7 +23,8 @@ type Props = {
   borderColor: ChartBorderColor;
   upColor: ChartSeriesColor;
   downColor: ChartSeriesColor;
-  typeChart?: ChartAvailableTypes;
+  typeSeries?: keyof SeriesDataItemTypeMap;
+  legend?: string;
 };
 
 /**
@@ -34,13 +37,14 @@ type Props = {
  * @param borderColor {ChartBackgroundColor} - цвет границ графика
  * @param downColor {ChartBackgroundColor} - цвет снижения графика
  * @param upColor {ChartBackgroundColor} - цвет повышения графика
- * @param [typeChart] {ChartAvailableTypes} - тип графика
+ * @param [typeSeries] {ChartAvailableTypes} - тип графика
+ * @param [legend] {string} - текст обозначение на графике
  * @example {
     backgroundColor: #000,
     autoSize: true,
     gridColor: #fef,
     textColor: #fff,
-    typeChart: 'Candlestick'
+    typeSeries: 'Candlestick'
     ...,
   }
  */
@@ -52,10 +56,12 @@ export const useChart = ({
   borderColor,
   downColor,
   upColor,
-  typeChart = 'Candlestick',
+  typeSeries = 'Candlestick',
+  legend = '',
 }: Props): State => {
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
-  const mainSeries = useRef<ISeriesApi<ChartAvailableTypes> | null>(null);
+  const legendRef = useRef<HTMLDivElement | null>(null);
+  const mainSeries = useRef<ISeriesApi<keyof SeriesDataItemTypeMap> | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -107,9 +113,9 @@ export const useChart = ({
       borderColor,
     });
 
-    let series: ISeriesApi<ChartAvailableTypes> | null = null;
+    let series: ISeriesApi<keyof SeriesDataItemTypeMap> | null = null;
 
-    if (typeChart === 'Candlestick') {
+    if (typeSeries === 'Candlestick') {
       series = chart.addCandlestickSeries({
         upColor: upColor,
         downColor: downColor,
@@ -117,7 +123,7 @@ export const useChart = ({
         wickUpColor: upColor,
         wickDownColor: downColor,
       });
-    } else if (typeChart === 'Bar') {
+    } else if (typeSeries === 'Bar') {
       series = chart.addBarSeries({
         upColor: upColor,
         downColor: downColor,
@@ -126,6 +132,27 @@ export const useChart = ({
 
     mainSeries.current = series;
 
+    // Текст обозначение при наведении на график
+    if (legend) {
+      chart.subscribeCrosshairMove((param) => {
+        if (!param.point) {
+          return;
+        }
+
+        if (param.time && series) {
+          const data = param.seriesData.get(series);
+
+          if (legendRef.current && isOhlcData(data)) {
+            const isGreen = data?.close > data.open;
+
+            legendRef.current.style.color = isGreen ? upColor : downColor;
+
+            legendRef.current.innerHTML = `<span>${legend}</span>`;
+          }
+        }
+      });
+    }
+
     window.addEventListener('resize', handleResize);
 
     return () => {
@@ -133,10 +160,11 @@ export const useChart = ({
 
       window.removeEventListener('resize', handleResize);
     };
-  }, [typeChart]);
+  }, [typeSeries]);
 
   return {
     ref: chartContainerRef,
     mainSeries,
+    legendRef,
   };
 };
