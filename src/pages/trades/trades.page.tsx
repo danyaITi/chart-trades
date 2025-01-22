@@ -9,8 +9,8 @@ import {
   TimeFrame,
 } from '@shared/types/enums';
 import {ReactElement, useCallback, useEffect, useState} from 'react';
-import {CandlestickData, UTCTimestamp} from 'lightweight-charts';
-import {Button, Loader, Menu, MenuItem} from '@shared/components';
+import {CandlestickData, SeriesDataItemTypeMap, UTCTimestamp} from 'lightweight-charts';
+import {Button, Legend, Loader, Menu, MenuItem} from '@shared/components';
 import {classNames, detectMob} from '@shared/utils';
 import CandlestickChartIcon from '@assets/images/candlestick-chart.svg?react';
 import BarChartIcon from '@assets/images/bar-chart.svg?react';
@@ -20,7 +20,7 @@ const url = 'wss://api-pub.bitfinex.com/ws/2';
 type ChartType = {
   icon: ReactElement<SVGElement>;
   label: string;
-  type: ChartAvailableTypes;
+  type: keyof SeriesDataItemTypeMap;
 };
 
 const TIME_FRAMES: TimeFrame[] = [
@@ -52,11 +52,11 @@ const CHART_TYPES: ChartType[] = [
  */
 export const TradesPage = () => {
   const [selectedFrame, setSelectedFrame] = useState<TimeFrame>(TimeFrame['1MINUTE']);
-  const [selectedTypeChart, setSelectedTypeChart] = useState<ChartAvailableTypes>('Candlestick');
+  const [selectedTypeChart, setSelectedTypeChart] = useState<keyof SeriesDataItemTypeMap>('Candlestick');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
 
-  const {ref, mainSeries} = useChart({
+  const {ref, mainSeries, legendRef} = useChart({
     backgroundColor: ChartBackgroundColor.DARK,
     autoSize: false,
     gridColor: ChartGridColor.SECONDARY,
@@ -64,7 +64,8 @@ export const TradesPage = () => {
     borderColor: ChartBorderColor.SECONDARY,
     upColor: ChartSeriesColor.UP,
     downColor: ChartSeriesColor.DOWN,
-    typeChart: selectedTypeChart,
+    typeSeries: selectedTypeChart,
+    legend: 'Test',
   });
 
   useEffect(() => {
@@ -176,7 +177,7 @@ export const TradesPage = () => {
   };
 
   // Выбирает тип показываемого графика
-  const selectTypeChartHandler = (value: ChartAvailableTypes) => () => {
+  const selectTypeChartHandler = (value: keyof SeriesDataItemTypeMap) => () => {
     setSelectedTypeChart(value);
     setIsOpenMenu(false);
   };
@@ -225,8 +226,9 @@ export const TradesPage = () => {
           onClickButton={toggleMenu}
           activeValue={getSelectedTypeChartIcon()}
           classNameMenu={classNames(styles.menu, {[styles.open]: isOpenMenu})}>
-          {CHART_TYPES.map((item) => (
+          {CHART_TYPES.map((item, index) => (
             <MenuItem
+              key={index}
               className={classNames(styles.menuItem, {[styles.selected]: selectedTypeChart === item.type})}
               onClick={selectTypeChartHandler(item.type)}>
               {item.icon}
@@ -235,7 +237,9 @@ export const TradesPage = () => {
           ))}
         </Menu>
       </div>
+
       <div className={styles.chartContainer} ref={ref}>
+        <Legend ref={legendRef} className={styles.legend} />
         {isLoading && (
           <span className={styles.loader}>
             <Loader />
