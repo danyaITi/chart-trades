@@ -23,8 +23,9 @@ type Props = {
   borderColor: ChartBorderColor;
   upColor: ChartSeriesColor;
   downColor: ChartSeriesColor;
+  hasLegend: boolean;
+  additionalLegendText?: string;
   typeSeries?: keyof SeriesDataItemTypeMap;
-  legend?: string;
 };
 
 /**
@@ -37,8 +38,10 @@ type Props = {
  * @param borderColor {ChartBackgroundColor} - цвет границ графика
  * @param downColor {ChartBackgroundColor} - цвет снижения графика
  * @param upColor {ChartBackgroundColor} - цвет повышения графика
+ * @param hasLegend {boolean} - показывать ли текст обозначение на графике
+ * @param [additionalLegendText] {string} - дополнительный текст в legend
  * @param [typeSeries] {ChartAvailableTypes} - тип графика
- * @param [legend] {string} - текст обозначение на графике
+ * 
  * @example {
     backgroundColor: #000,
     autoSize: true,
@@ -57,7 +60,8 @@ export const useChart = ({
   downColor,
   upColor,
   typeSeries = 'Candlestick',
-  legend = '',
+  hasLegend,
+  additionalLegendText,
 }: Props): State => {
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const legendRef = useRef<HTMLDivElement | null>(null);
@@ -133,8 +137,13 @@ export const useChart = ({
     mainSeries.current = series;
 
     // Текст обозначение при наведении на график
-    if (legend) {
+    if (hasLegend) {
       chart.subscribeCrosshairMove((param) => {
+        let priceOpen = '';
+        let priceMax = '';
+        let priceMin = '';
+        let priceClose = '';
+
         if (!param.point) {
           return;
         }
@@ -145,9 +154,20 @@ export const useChart = ({
           if (legendRef.current && isOhlcData(data)) {
             const isGreen = data?.close > data.open;
 
+            priceOpen = data.open.toFixed(2);
+            priceMax = data.high.toFixed(2);
+            priceMin = data.low.toFixed(2);
+            priceClose = data.close.toFixed(2);
+
             legendRef.current.style.color = isGreen ? upColor : downColor;
 
-            legendRef.current.innerHTML = `<span>${legend}</span>`;
+            legendRef.current.innerHTML = `
+            <div><span id='legend'>${additionalLegendText}</span></div>
+            <div><span id='legend'>ОТКР</span> <span>${priceOpen}</span></div>
+            <div><span id='legend'>МАКС</span> <span>${priceMax}</span></div>
+            <div><span id='legend'>МИН</span> <span>${priceMin}</span></div>
+            <div><span id='legend'>ЗАКР</span> <span>${priceClose}</span></div>
+          `;
           }
         }
       });
