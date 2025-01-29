@@ -65,7 +65,8 @@ export const TradesPage = () => {
     upColor: ChartSeriesColor.UP,
     downColor: ChartSeriesColor.DOWN,
     typeSeries: selectedTypeChart,
-    legend: 'Test',
+    hasLegend: true,
+    additionalLegendText: selectedFrame,
   });
 
   useEffect(() => {

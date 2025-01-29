@@ -15,6 +15,6 @@ export enum ChartBorderColor {
 }
 
 export enum ChartSeriesColor {
-  'DOWN' = '#ff3b30',
-  'UP' = '#3dbd7d',
+  'DOWN' = '#ef454a',
+  'UP' = '#20b26c',
 }

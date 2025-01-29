@@ -61,7 +61,7 @@
 .menuItem {
   cursor: pointer;
   &:hover {
-    color: $colorTextOrange;
+    color: $colorTextWhite;
   }
 }
 
@@ -71,5 +71,9 @@
 
 .legend {
   padding-left: 8px;
-  top: 15px;
+  top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: $fontSizeS;
 }
