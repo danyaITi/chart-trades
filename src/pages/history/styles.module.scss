@@ -17,20 +17,6 @@
   height: 50%;
 }
 
-.timeFrameButton {
-  color: $colorTextSecondary;
-  font-size: $fontSizeSm;
-  padding: 8px;
-
-  &:hover {
-    color: $colorTextOrange;
-  }
-}
-
-.selectedFrame {
-  color: $colorTextWhite;
-}
-
 .loader {
   position: absolute;
   z-index: 9;
@@ -44,29 +30,6 @@
   opacity: 0.3;
   width: 1px;
   height: 15px;
-}
-
-.menu {
-  padding: 4px;
-  background-color: $colorSecondary;
-  border-radius: 6px;
-  width: 100px;
-  height: auto;
-}
-
-.menu.open {
-  display: block;
-}
-
-.menuItem {
-  cursor: pointer;
-  &:hover {
-    color: $colorTextWhite;
-  }
-}
-
-.menuItem.selected {
-  color: $colorTextOrange;
 }
 
 .legend {

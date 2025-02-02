@@ -6,8 +6,8 @@ import {
   ChartGridColor,
   ChartSeriesColor,
   ChartTextColor,
-} from '@shared/types/enums';
-import {isOhlcData} from '@shared/types/guards';
+} from '@shared/models/enums';
+import {isOhlcData} from '@shared/models/type_guards';
 
 type State = {
   ref: MutableRefObject<HTMLDivElement | null>;
