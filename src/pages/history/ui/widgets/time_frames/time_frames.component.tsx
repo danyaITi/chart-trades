@@ -1,7 +1,7 @@
 import {Button} from '@shared/components';
 import {classNames} from '@shared/utils';
 import styles from './styles.module.scss';
-import {TimeFrame} from '@pages/trades/models';
+import {TimeFrame} from '@pages/history/models';
 
 const TIME_FRAMES: TimeFrame[] = [
   TimeFrame['1MINUTE'],
