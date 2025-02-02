@@ -1,0 +1,49 @@
+.marketArea {
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: $backgroundChart;
+}
+
+.marketCurrency {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  svg {
+    path {
+      fill: $colorTextWhite;
+    }
+  }
+}
+
+.menu {
+  padding: 8px;
+  background-color: #1e2023;
+  border-radius: 6px;
+  min-width: 150px;
+  left: -35px;
+}
+
+.menu.open {
+  display: block;
+}
+
+.menuItem {
+  cursor: pointer;
+  &:hover {
+    color: $colorTextWhite;
+  }
+  &:not(:last-child) {
+    margin-bottom: 8px;
+  }
+}
+
+.menuItem.selected {
+  color: $colorTextOrange;
+}
+
+.selectedCurrencyLabel {
+  color: $colorTextWhite;
+}

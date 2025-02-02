@@ -1,9 +1,14 @@
-import {TradesPage} from '@pages/trades';
+import {HistoryPage} from '@pages/history';
 
-export const App = () => {
-  return (
+import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
+
+import '@app/styles/index.scss';
+
+createRoot(document.getElementById('root') as HTMLElement).render(
+  <StrictMode>
     <section>
-      <TradesPage />
+      <HistoryPage />
     </section>
-  );
-};
+  </StrictMode>,
+);

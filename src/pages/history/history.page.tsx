@@ -6,55 +6,24 @@ import {
   ChartGridColor,
   ChartSeriesColor,
   ChartTextColor,
-  TimeFrame,
-} from '@shared/types/enums';
-import {ReactElement, useCallback, useEffect, useState} from 'react';
+} from '@shared/models/enums';
+import {useEffect, useState} from 'react';
 import {CandlestickData, SeriesDataItemTypeMap, UTCTimestamp} from 'lightweight-charts';
-import {Button, Legend, Loader, Menu, MenuItem} from '@shared/components';
-import {classNames, detectMob} from '@shared/utils';
-import CandlestickChartIcon from '@assets/images/candlestick-chart.svg?react';
-import BarChartIcon from '@assets/images/bar-chart.svg?react';
+import {Legend, Loader} from '@shared/components';
+
+import {MarketArea, MenuSeries, TimeFrames} from '@pages/history/ui';
+import {TimeFrame} from '@pages/history/models';
 
 const url = 'wss://api-pub.bitfinex.com/ws/2';
 
-type ChartType = {
-  icon: ReactElement<SVGElement>;
-  label: string;
-  type: keyof SeriesDataItemTypeMap;
-};
-
-const TIME_FRAMES: TimeFrame[] = [
-  TimeFrame['1MINUTE'],
-  TimeFrame['15MINUTE'],
-  TimeFrame['30MINUTE'],
-  TimeFrame['1HOUR'],
-  TimeFrame['12HOUR'],
-  TimeFrame['1DAY'],
-  TimeFrame['1WEEK'],
-  TimeFrame['1MONTH'],
-];
-
-const CHART_TYPES: ChartType[] = [
-  {
-    icon: <CandlestickChartIcon width={24} height={24} />,
-    label: 'Свечи',
-    type: 'Candlestick',
-  },
-  {
-    icon: <BarChartIcon width={24} height={24} />,
-    label: 'Бары',
-    type: 'Bar',
-  },
-];
-
 /**
- * Страница мониторинга крипто-валют
+ * Страница мониторинга истории курса крипто-валют
  */
-export const TradesPage = () => {
-  const [selectedFrame, setSelectedFrame] = useState<TimeFrame>(TimeFrame['1MINUTE']);
-  const [selectedTypeChart, setSelectedTypeChart] = useState<keyof SeriesDataItemTypeMap>('Candlestick');
+export const HistoryPage = () => {
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState<TimeFrame>(TimeFrame['1MINUTE']);
+  const [selectedSeries, setSelectedSeries] = useState<keyof SeriesDataItemTypeMap>('Candlestick');
+  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>('tBTCUSD');
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
 
   const {ref, mainSeries, legendRef} = useChart({
     backgroundColor: ChartBackgroundColor.DARK,
@@ -64,9 +33,9 @@ export const TradesPage = () => {
     borderColor: ChartBorderColor.SECONDARY,
     upColor: ChartSeriesColor.UP,
     downColor: ChartSeriesColor.DOWN,
-    typeSeries: selectedTypeChart,
+    typeSeries: selectedSeries,
     hasLegend: true,
-    additionalLegendText: selectedFrame,
+    additionalLegendText: `${selectedCurrency} ${selectedTimeFrame}`,
   });
 
   useEffect(() => {
@@ -88,7 +57,7 @@ export const TradesPage = () => {
         JSON.stringify({
           event: 'subscribe',
           channel: 'candles',
-          key: `trade:${selectedFrame}:tBTCUSD`,
+          key: `trade:${selectedTimeFrame}:${selectedCurrency}`,
         }),
       );
 
@@ -170,73 +139,17 @@ export const TradesPage = () => {
       clearInterval(heartbeatInterval);
       clearTimeout(heartbeatTimeout);
     };
-  }, [selectedFrame, selectedTypeChart]);
-
-  // Выбирает временные рамки для показа на графике
-  const selectTimeHandler = (time: TimeFrame) => () => {
-    setSelectedFrame(time);
-  };
-
-  // Выбирает тип показываемого графика
-  const selectTypeChartHandler = (value: keyof SeriesDataItemTypeMap) => () => {
-    setSelectedTypeChart(value);
-    setIsOpenMenu(false);
-  };
-
-  const getSelectedTypeChartIcon = useCallback(() => {
-    return CHART_TYPES.find((chart) => chart.type === selectedTypeChart)?.icon;
-  }, [selectedTypeChart]);
-
-  const handleMouseEnter = () => {
-    if (!detectMob()) {
-      setIsOpenMenu(true);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (!detectMob()) {
-      setIsOpenMenu(false);
-    }
-  };
-
-  const toggleMenu = () => {
-    if (detectMob()) {
-      setIsOpenMenu((prev) => !prev);
-    }
-  };
+  }, [selectedTimeFrame, selectedSeries, selectedCurrency]);
 
   return (
     <div className={styles.container}>
+      <MarketArea selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} />
       <div className={styles.chartHeader}>
-        <ul>
-          {TIME_FRAMES.map((frame, index) => (
-            <Button
-              key={index}
-              className={classNames(styles.timeFrameButton, {[styles.selectedFrame]: selectedFrame === frame})}
-              onClick={selectTimeHandler(frame)}>
-              {frame}
-            </Button>
-          ))}
-        </ul>
+        <TimeFrames selectedTimeFrame={selectedTimeFrame} setSelectedTimeFrame={setSelectedTimeFrame} />
 
         <span className={styles.hr} />
 
-        <Menu
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onClickButton={toggleMenu}
-          activeValue={getSelectedTypeChartIcon()}
-          classNameMenu={classNames(styles.menu, {[styles.open]: isOpenMenu})}>
-          {CHART_TYPES.map((item, index) => (
-            <MenuItem
-              key={index}
-              className={classNames(styles.menuItem, {[styles.selected]: selectedTypeChart === item.type})}
-              onClick={selectTypeChartHandler(item.type)}>
-              {item.icon}
-              {item.label}
-            </MenuItem>
-          ))}
-        </Menu>
+        <MenuSeries selectedSeries={selectedSeries} setSelectedSeries={setSelectedSeries} />
       </div>
 
       <div className={styles.chartContainer} ref={ref}>

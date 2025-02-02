@@ -1,0 +1,21 @@
+.menu {
+  padding: 4px;
+  background-color: $colorSecondary;
+  border-radius: 6px;
+  width: 100px;
+}
+
+.menu.open {
+  display: block;
+}
+
+.menuItem {
+  cursor: pointer;
+  &:hover {
+    color: $colorTextWhite;
+  }
+}
+
+.menuItem.selected {
+  color: $colorTextOrange;
+}
