@@ -13,16 +13,29 @@ import {Legend, Loader} from '@shared/components';
 
 import {MarketArea, MenuSeries, TimeFrames} from '@pages/history/ui';
 import {TimeFrame} from '@pages/history/models';
+import {getDataSessionStorage, logger, sessionStorageKey, setDataSessionStorage} from '@shared/utils';
 
 const url = 'wss://api-pub.bitfinex.com/ws/2';
+
+type DataForSave = {
+  selectedTimeFrame: TimeFrame;
+  selectedSeries: keyof SeriesDataItemTypeMap;
+  selectedCurrency: CurrencyType;
+};
 
 /**
  * Страница мониторинга истории курса крипто-валют
  */
 export const HistoryPage = () => {
-  const [selectedTimeFrame, setSelectedTimeFrame] = useState<TimeFrame>(TimeFrame['1MINUTE']);
-  const [selectedSeries, setSelectedSeries] = useState<keyof SeriesDataItemTypeMap>('Candlestick');
-  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>('tBTCUSD');
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState<TimeFrame>(
+    getDataSessionStorage<DataForSave>(sessionStorageKey.chartHistoryPage)?.selectedTimeFrame ?? TimeFrame['1MINUTE'],
+  );
+  const [selectedSeries, setSelectedSeries] = useState<keyof SeriesDataItemTypeMap>(
+    getDataSessionStorage<DataForSave>(sessionStorageKey.chartHistoryPage)?.selectedSeries ?? 'Candlestick',
+  );
+  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType>(
+    getDataSessionStorage<DataForSave>(sessionStorageKey.chartHistoryPage)?.selectedCurrency ?? 'tBTCUSD',
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const {ref, mainSeries, legendRef} = useChart({
@@ -60,6 +73,13 @@ export const HistoryPage = () => {
           key: `trade:${selectedTimeFrame}:${selectedCurrency}`,
         }),
       );
+
+      // После установки соединения, сохраняет параметры в локальное хранилище
+      setDataSessionStorage(sessionStorageKey.chartHistoryPage, {
+        selectedTimeFrame,
+        selectedSeries,
+        selectedCurrency,
+      });
 
       // Устанавливает интервал для heartbeat на 30 секунд
       heartbeatInterval = setInterval(sendHeartbeat, 30000);
@@ -99,7 +119,12 @@ export const HistoryPage = () => {
 
           // Обновляет график при изменении стоимости валюты
           if (mainSeries.current) {
-            mainSeries.current.update(newCandle);
+            try {
+              mainSeries.current.update(newCandle);
+            } catch (error) {
+              logger.warn('', error);
+              return;
+            }
           }
         } else {
           const candles: CandlestickData[] = response[1]
