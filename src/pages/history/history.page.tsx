@@ -168,22 +168,27 @@ export const HistoryPage = () => {
 
   return (
     <div className={styles.container}>
-      <MarketArea selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} />
-      <div className={styles.chartHeader}>
-        <TimeFrames selectedTimeFrame={selectedTimeFrame} setSelectedTimeFrame={setSelectedTimeFrame} />
-
-        <span className={styles.hr} />
-
-        <MenuSeries selectedSeries={selectedSeries} setSelectedSeries={setSelectedSeries} />
+      <div className={styles.marketAreaGridContainer}>
+        <MarketArea selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} />
       </div>
 
-      <div className={styles.chartContainer} ref={ref}>
-        <Legend ref={legendRef} className={styles.legend} />
-        {isLoading && (
-          <span className={styles.loader}>
-            <Loader />
-          </span>
-        )}
+      <div className={styles.chartGridContainer}>
+        <div className={styles.chartHeader}>
+          <TimeFrames selectedTimeFrame={selectedTimeFrame} setSelectedTimeFrame={setSelectedTimeFrame} />
+
+          <span className={styles.hr} />
+
+          <MenuSeries selectedSeries={selectedSeries} setSelectedSeries={setSelectedSeries} />
+        </div>
+
+        <div className={styles.chartContainer} ref={ref}>
+          <Legend ref={legendRef} className={styles.legend} />
+          {isLoading && (
+            <span className={styles.loader}>
+              <Loader />
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
