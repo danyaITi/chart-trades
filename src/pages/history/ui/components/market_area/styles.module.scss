@@ -19,8 +19,7 @@
 }
 
 .menu {
-  padding: 8px;
-  background-color: #1e2023;
+  background-color: $backgroundMenu;
   border-radius: 6px;
   min-width: 150px;
   left: -35px;
@@ -31,9 +30,11 @@
 }
 
 .menuItem {
+  border-radius: 6px;
+  padding: 8px;
   cursor: pointer;
   &:hover {
-    color: $colorTextWhite;
+    background-color: $backgroundActive;
   }
   &:not(:last-child) {
     margin-bottom: 8px;
@@ -41,7 +42,7 @@
 }
 
 .menuItem.selected {
-  color: $colorTextOrange;
+  background-color: $backgroundActive;
 }
 
 .selectedCurrencyLabel {
