@@ -1,0 +1,13 @@
+.timeFrameButton {
+  color: $colorTextSecondary;
+  font-size: $fontSizeSm;
+  padding: 8px;
+
+  &:hover {
+    color: $colorTextOrange;
+  }
+}
+
+.selected {
+  color: $colorTextWhite;
+}
