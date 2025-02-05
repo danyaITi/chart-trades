@@ -42,4 +42,11 @@ export default [
       'no-duplicate-imports': 'error',
     },
   },
+
+  {
+    files: ['src/shared/utils/logger/*.{js,ts,tsx}'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 ];
